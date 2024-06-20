@@ -1,0 +1,94 @@
+import javafx.application.Application;
+import static javafx.application.Application.launch;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+public class StudentInformation extends Application {
+    @Override
+    public void start(Stage primaryStage) {
+        
+        TextField firstNameField = new TextField();
+        TextField lastNameField = new TextField();
+        TextField ageField = new TextField();
+        ageField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                ageField.setText(oldValue);
+            }
+        });
+        TextField emailField = new TextField();
+        ToggleGroup genderGroup = new ToggleGroup();
+        RadioButton maleRadio = new RadioButton("Male");
+        RadioButton femaleRadio = new RadioButton("Female");
+        maleRadio.setToggleGroup(genderGroup);
+        femaleRadio.setToggleGroup(genderGroup);
+        ChoiceBox<String> departmentChoice = new ChoiceBox<>();
+        departmentChoice.getItems().addAll("Computer Science", "Software Engineering", "IT", "IS", "Data Science");
+        Button loginButton = new Button("Login");
+        Button resetButton = new Button("Reset");
+
+        GridPane gr = new GridPane();
+        gr.setHgap(10);
+        gr.setVgap(10);
+        gr.setPadding(new Insets(20, 20, 20, 20));
+        gr.add(new Label("First Name:"), 0, 0);
+        gr.add(firstNameField, 1, 0);
+        gr.add(new Label("Last Name:"), 0, 1);
+        gr.add(lastNameField, 1, 1);
+        gr.add(new Label("Age:"), 0, 2);
+        gr.add(ageField, 1, 2);
+        gr.add(new Label("Email:"), 0, 3);
+        gr.add(emailField, 1, 3);
+        gr.add(new Label("Gender:"), 0, 4);
+        gr.add(maleRadio, 1, 4);
+        gr.add(femaleRadio, 2, 4);
+        gr.add(new Label("Department:"), 0, 5);
+        gr.add(departmentChoice, 1, 5);
+
+        HBox buttonBox = new HBox(10, loginButton, resetButton);
+        buttonBox.setAlignment(Pos.CENTER);
+        VBox mainBox = new VBox(20, gr, buttonBox);
+        mainBox.setAlignment(Pos.CENTER);
+        loginButton.setOnAction(e -> {
+            String firstName = firstNameField.getText();
+            String department = departmentChoice.getValue();
+            if (firstName.isEmpty() || department == null) {
+                Text errorText = new Text("Please fill in all the required fields.");
+                errorText.setFill(Color.RED);
+                errorText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+                mainBox.getChildren().add(errorText);
+            } else {
+                Text welcomeText = new Text("Welcome, " + firstName + "! You have selected the " + department + " department.");
+                welcomeText.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+                welcomeText.setFill(Color.GREEN);
+                mainBox.getChildren().add(welcomeText);
+            }
+        });
+        resetButton.setOnAction(e -> {
+            firstNameField.clear();
+            lastNameField.clear();
+            ageField.clear();
+            emailField.clear();
+            genderGroup.getSelectedToggle().setSelected(false);
+            departmentChoice.getSelectionModel().clearSelection();
+            mainBox.getChildren().remove(mainBox.getChildren().size() - 1);
+        });
+        Scene scene = new Scene(mainBox, 400, 400);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Student Information Form");
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
